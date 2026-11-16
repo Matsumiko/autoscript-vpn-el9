@@ -17,6 +17,12 @@ line, no `Server` header, no `Upgrade: websocket` response.
 (SSH injector, VMESS, VLESS, Trojan, v2ray/Xray) send it. Scanners don't.
 Non-WebSocket requests get HTTP 444 — instant TCP close, zero bytes sent.
 
+> **Case-insensitive on purpose.** The guard uses `!~*` (regex, case-insensitive)
+> instead of `!=`. Nginx string comparison is case-sensitive, so an exact match
+> rejects clients that send `Upgrade: WebSocket` — which some injector apps do.
+> Symptom: those clients fail on port 80 (VLESS/VMess non-TLS over WS) while
+> v2rayNG works.
+
 ---
 
 ## Step 1: Add `return 444` Guards
@@ -27,14 +33,14 @@ inside each WebSocket location block:
 ### `/vless`
 ```nginx
     location /vless {
-        if ($http_upgrade != "websocket") { return 444; }
+        if ($http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://vless_ws;
 ```
 
 ### `/vmess`
 ```nginx
     location /vmess {
-        if ($http_upgrade != "websocket") { return 444; }
+        if ($http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://vmess_ws;
 ```
 > If `/vmess` block doesn't exist yet, add it (identical structure to `/vless`).
@@ -42,21 +48,21 @@ inside each WebSocket location block:
 ### `/trojan`
 ```nginx
     location /trojan {
-        if ($http_upgrade != "websocket") { return 444; }
+        if ($http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://trojan_ws;
 ```
 
 ### `/ssh`
 ```nginx
     location /ssh {
-        if ($http_upgrade != "websocket") { return 444; }
+        if ($http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://ssh_ws;
 ```
 
 ### `/` (root — **before** the `rewrite` line)
 ```nginx
     location / {
-        if ($http_upgrade != "websocket") { return 444; }
+        if ($http_upgrade !~* "websocket") { return 444; }
         rewrite ^.*$ / break;
 ```
 
@@ -103,7 +109,7 @@ get the silent disconnect.
 
 ## Rollback
 
-Remove the added `if ($http_upgrade != "websocket") { return 444; }` lines
+Remove the added `if ($http_upgrade !~* "websocket") { return 444; }` lines
 from each location block, then:
 
 ```bash

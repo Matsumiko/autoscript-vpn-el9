@@ -1556,7 +1556,7 @@ server {
 
     # Explicit protocol paths.
     location /vless {
-        if (\$http_upgrade != "websocket") { return 444; }
+        if (\$http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://vless_ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -1652,7 +1652,7 @@ server {
     # Explicit /vmess path: silently reject scanners. VMESS clients use "/"
     # (the root-path location below) — not this explicit path.
     location /vmess {
-        if (\$http_upgrade != "websocket") { return 444; }
+        if (\$http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://vmess_ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -1666,7 +1666,7 @@ server {
     }
 
     location /trojan {
-        if (\$http_upgrade != "websocket") { return 444; }
+        if (\$http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://trojan_ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -1681,7 +1681,7 @@ server {
 
     # Explicit SSH-WS path (always forced to the ssh-ws proxy).
     location /ssh {
-        if (\$http_upgrade != "websocket") { return 444; }
+        if (\$http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://ssh_ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -1696,7 +1696,7 @@ server {
 
     # Explicit NoobzVPN path.
     location ~* ^/(noobz|noobz-ws) {
-        if (\$http_upgrade != "websocket") { return 444; }
+        if (\$http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://noobz_ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -1857,7 +1857,7 @@ server {
 
     # Explicit NoobzVPN path over port 82.
     location ~* ^/(noobz|noobz-ws) {
-        if (\$http_upgrade != "websocket") { return 444; }
+        if (\$http_upgrade !~* "websocket") { return 444; }
         proxy_pass http://noobz_ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
