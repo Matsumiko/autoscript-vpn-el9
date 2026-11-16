@@ -70,6 +70,18 @@ Build stock: `status: NXDOMAIN` (atau `NULL \# 1 00`).
 `scripts/system/slowdns.sh` menjalankan cek ini otomatis setelah install
 (`slowdns_verify_binary`) dan berteriak kalau binary-nya masih stock.
 
+**Catatan `-mtu` (hasil uji):**
+
+| `-mtu` | KCP MTU | Throughput (jalur bersih, 8.8.8.8) |
+|---|---|---|
+| 1232 (default) | 932 | ~2,1 Mbps |
+| 512 | 215 | ~1,0 Mbps |
+| 4096 | 932 | data mati total di jalur yang MTU-nya < 1500 |
+
+Kesimpulan: biarkan `1232`. Turun ke 512 hanya masuk akal kalau jalur klien
+membuang paket besar (di uji kami justru separuh). Naik ke 4096 bikin respons
+ke-fragmentasi dan di-drop — gejala "konek tapi tanpa data".
+
 **Rebuild binary yang di-vendor** (`bin/dnstt-server-linux-{amd64,arm64}.tar.gz`):
 
 ```bash
