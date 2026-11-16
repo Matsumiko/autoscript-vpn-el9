@@ -2002,9 +2002,15 @@ frontend slowdns_mux
     mode tcp
     option tcplog
     timeout client 30m
-    tcp-request inspect-delay 2s
+    # DNSTT adds seconds of latency before the first tunnel byte arrives (client
+    # session handshake + DNS polling). A short inspect-delay expires first and
+    # silently sends every V2Ray/WS stream to dropbear: SSH over the tunnel works
+    # while VLESS/VMess/Trojan over the same tunnel never connects.
+    tcp-request inspect-delay 60s
     acl is_http req.payload(0,10) -m reg -i ^(GET|POST|HEAD|PUT|OPTIONS|DELETE|PATCH|TRACE|CONNECT)
-    tcp-request content accept if { req.len gt 0 }
+    # Wait for enough bytes to classify; a 1-2 byte first DNS chunk must not
+    # pick the backend.
+    tcp-request content accept if { req.len ge 10 }
     use_backend nginx_http if is_http
     default_backend dropbear_raw
 

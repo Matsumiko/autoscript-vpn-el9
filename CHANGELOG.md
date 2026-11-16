@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased] — fork fixes
 
 ### Fixed
+- **V2Ray (VLESS/VMess/Trojan) lewat SlowDNS tidak pernah connect** — frontend
+  HAProxy `slowdns_mux` memakai `tcp-request inspect-delay 2s`. DNSTT butuh
+  beberapa detik (handshake sesi + polling DNS) sebelum byte pertama klien
+  sampai, jadi inspection kadaluarsa dan *semua* stream jatuh ke
+  `default_backend dropbear_raw`: SSH lewat tunnel jalan, V2Ray lewat tunnel
+  selalu mati. Sekarang `inspect-delay 60s` + klasifikasi menunggu
+  `{ req.len ge 10 }` supaya potongan DNS 1-2 byte tidak menentukan backend.
 - **Nginx gagal start di distro nginx < 1.25.1** — `risqinf.conf` memakai
   direktif `http2 on;` (baru ada sejak nginx 1.25.1). Build distro Rocky/Alma
   Linux 9 = nginx 1.20.1, jadi unit mati dengan
