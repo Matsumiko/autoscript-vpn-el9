@@ -97,7 +97,7 @@ User=root
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 NoNewPrivileges=true
-ExecStart=${SLOWDNS_BIN} -udp :5300 -privkey-file ${SLOWDNS_KEY} ${ns} 127.0.0.1:109
+ExecStart=${SLOWDNS_BIN} -udp :5300 -privkey-file ${SLOWDNS_KEY} ${ns} 127.0.0.1:110
 Restart=always
 RestartSec=1s
 LimitNOFILE=1048576
@@ -402,7 +402,7 @@ slowdns_info() {
   ui_header "SLOWDNS (DNSTT) INFORMATION"
   ui_status "Service " "$status_badge"
   ui_kv "Port" "53 / 5300 UDP"
-  ui_kv "Forward" "Dropbear SSH (127.0.0.1:109)"
+  ui_kv "Forward" "SSH + V2Ray(WS) via haproxy 127.0.0.1:110"
   ui_kv "Nameserver" "${ns}"
   ui_kv "Public Key" "${pub}"
   ui_rule

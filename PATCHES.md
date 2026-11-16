@@ -158,6 +158,38 @@ diam-diam memasang tunnel yang tidak jalan.
 
 ---
 
+## 5. SlowDNS: satu domain untuk SSH + V2Ray (WS)
+
+`dnstt-server` hanya meneruskan ke satu upstream. Supaya tunnel yang sama bisa
+dipakai **SSH** dan **V2Ray/VMess sekaligus**, upstream diarahkan ke multiplexer
+haproxy `127.0.0.1:110`:
+
+- payload HTTP/WebSocket (`GET|POST|...`) → backend `nginx_http` (`send-proxy`)
+  → nginx `location /` → xray `vmess-ws` / `vless-ws`
+- sisanya (banner SSH) → `dropbear_raw` → dropbear `127.0.0.1:109`
+
+Karena routing-nya berdasarkan isi paket pertama, klien SSH lama tidak berubah
+(login tetap ~1 detik), dan tidak perlu NS/domain kedua.
+
+**Resep klien (VMess lewat DNS tunnel):**
+
+```bash
+# 1. tunnel
+dnstt-client -udp 8.8.8.8:53 -pubkey <PUBKEY> <NS> 127.0.0.1:10808
+
+# 2. VMess (xray/sing-box/v2rayN), akun VMess yang sudah ada:
+#    address   : 127.0.0.1
+#    port      : 10808            (port listener dnstt-client)
+#    uuid      : akun vmess lo
+#    network   : ws
+#    path      : /
+#    Host      : <NS induk, mis. s2.domain>
+#    security  : none  (tidak ada TLS — transport-nya DNS tunnel)
+```
+
+Hasil uji di server: `http://cp.cloudflare.com` → `204`, `https://google.com`
+→ `200` lewat VMess di dalam DNSTT, dengan SSH tetap jalan di domain yang sama.
+
 ## Rebase ke upstream baru
 
 1. `git remote add upstream https://github.com/risqinf/autoscript.git`

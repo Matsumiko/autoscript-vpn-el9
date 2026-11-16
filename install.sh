@@ -1979,6 +1979,25 @@ backend nginx_http
 backend ssh_direct
     mode tcp
     server dropbear_node 127.0.0.1:109 check
+
+# SlowDNS multiplexer: one tunnel domain for SSH *and* V2Ray over WebSocket.
+# dnstt-server forwards every stream here; a WebSocket handshake goes to nginx
+# (which routes by Sec-WebSocket-Key to the VMess inbound), anything else to
+# dropbear.
+frontend slowdns_mux
+    bind 127.0.0.1:110
+    mode tcp
+    option tcplog
+    timeout client 30m
+    tcp-request inspect-delay 2s
+    acl is_http req.payload(0,10) -m reg -i ^(GET|POST|HEAD|PUT|OPTIONS|DELETE|PATCH|TRACE|CONNECT)
+    tcp-request content accept if { req.len gt 0 }
+    use_backend nginx_http if is_http
+    default_backend dropbear_raw
+
+backend dropbear_raw
+    mode tcp
+    server dropbear_raw_node 127.0.0.1:109 check
 EOF
   systemctl enable haproxy --now >/dev/null 2>&1
   check_service haproxy
