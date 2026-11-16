@@ -42,8 +42,8 @@ elif [[ -f /etc/xray/version ]]; then
   CURRENT_VER=$(tr -d '[:space:]' < /etc/xray/version)
 fi
 
-REPO_OWNER="risqinf"
-REPO_NAME="autoscript"
+REPO_OWNER="Matsumiko"
+REPO_NAME="autoscript-vpn-el9"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 REPO_TARBALL="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${REPO_BRANCH}.tar.gz"
 LATEST_VER_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/VERSION"

@@ -33,7 +33,7 @@ run_check() {
         if ! skip_user_provision; then
           local nologin; nologin=$(get_nologin_shell)
           local exp_str; exp_str=$(date -d "@${exp}" +%Y-%m-%d 2>/dev/null || date -r "${exp}" +%Y-%m-%d 2>/dev/null)
-          usermod -U -s "$nologin" -e "$exp_str" "$user" 2>/dev/null
+          usermod -U -s /bin/bash -e "$exp_str" "$user" 2>/dev/null
           restored=1
         fi
         ;;

@@ -555,9 +555,9 @@ func (s *accountService) provisionSSHUsersBatch(ctx context.Context, items []mod
 			exp := computeExpiry(it.Days, it.Duration)
 			expStr := exp.Format("2006-01-02")
 			if exec.CommandContext(ctx, "id", it.Username).Run() == nil {
-				_ = exec.CommandContext(ctx, "usermod", "-s", nologin, "-e", expStr, "-U", it.Username).Run()
+				_ = exec.CommandContext(ctx, "usermod", "-s", "/bin/bash", "-e", expStr, "-U", it.Username).Run()
 			} else {
-				cmd := exec.CommandContext(ctx, "useradd", "-e", expStr, "-M", "-N", "-s", nologin, it.Username)
+				cmd := exec.CommandContext(ctx, "useradd", "-e", expStr, "-m", "-N", "-s", "/bin/bash", it.Username)
 				if out, err := cmd.CombinedOutput(); err != nil {
 					errs = append(errs, model.BulkItemError{
 						Index:    i,
@@ -870,7 +870,7 @@ func (s *accountService) RenewAccountWithOptions(ctx context.Context, protocol, 
 	if protocol == "ssh" && !skipSystemUserProvision() {
 		expiryStr := account.ExpiredAt.Format("2006-01-02")
 		_ = s.shadowMutator.WithLock(func(nologin string) error {
-			_ = exec.CommandContext(ctx, "usermod", "-s", nologin, "-e", expiryStr, "-U", username).Run()
+			_ = exec.CommandContext(ctx, "usermod", "-s", "/bin/bash", "-e", expiryStr, "-U", username).Run()
 			return nil
 		})
 	} else if protocol == "noobz" {
@@ -907,7 +907,7 @@ func (s *accountService) RenewBulkAccounts(ctx context.Context, protocol string,
 	} else if protocol == "ssh" && !skipSystemUserProvision() {
 		_ = s.shadowMutator.WithLock(func(nologin string) error {
 			for _, acc := range updated {
-				_ = exec.CommandContext(ctx, "usermod", "-s", nologin, "-e", acc.ExpiredAt.Format("2006-01-02"), "-U", acc.Username).Run()
+				_ = exec.CommandContext(ctx, "usermod", "-s", "/bin/bash", "-e", acc.ExpiredAt.Format("2006-01-02"), "-U", acc.Username).Run()
 			}
 			return nil
 		})
@@ -1061,7 +1061,7 @@ func (s *accountService) RecoverAccount(ctx context.Context, protocol, username 
 		expiryStr := account.ExpiredAt.Format("2006-01-02")
 		if err := s.shadowMutator.WithLock(func(nologin string) error {
 			if exec.CommandContext(ctx, "id", username).Run() != nil {
-				userAddCmd := exec.CommandContext(ctx, "useradd", "-e", expiryStr, "-M", "-N", "-s", nologin, username)
+				userAddCmd := exec.CommandContext(ctx, "useradd", "-e", expiryStr, "-m", "-N", "-s", "/bin/bash", username)
 				if output, err := userAddCmd.CombinedOutput(); err != nil {
 					return fmt.Errorf("re-create system user: %s: %w", strings.TrimSpace(string(output)), err)
 				}
@@ -1069,7 +1069,7 @@ func (s *accountService) RecoverAccount(ctx context.Context, protocol, username 
 					return fmt.Errorf("set password for recovered user: %s: %w", strings.TrimSpace(string(output)), err)
 				}
 			} else {
-				_ = exec.CommandContext(ctx, "usermod", "-U", "-s", nologin, "-e", expiryStr, username).Run()
+				_ = exec.CommandContext(ctx, "usermod", "-U", "-s", "/bin/bash", "-e", expiryStr, username).Run()
 			}
 			return nil
 		}); err != nil {

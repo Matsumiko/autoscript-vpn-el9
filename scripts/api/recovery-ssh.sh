@@ -28,7 +28,7 @@ if id "$user" &>/dev/null; then
   chage -E "$exp_system" "$user" 2>/dev/null || true
 else
   nologin=$(ensure_nologin_shell); [[ -z "$nologin" ]] && nologin=/usr/sbin/nologin
-  useradd -e "$exp_system" -M -N -s "$nologin" "$user" || err_json 500 "Failed to recreate system user"
+  useradd -e "$exp_system" -m -N -s /bin/bash "$user" || err_json 500 "Failed to recreate system user"
   echo "${user}:${secret}" | chpasswd || err_json 500 "Failed to set user password"
 fi
 

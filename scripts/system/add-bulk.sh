@@ -93,7 +93,7 @@ elif [[ "$proto" == "ssh" ]]; then
     user="${prefix}$(printf '%03d' "$i")_$(gen_pass 4 | tr 'A-Z' 'a-z')"
     pass=$(gen_pass 10)
     if db_account_exists "ssh" "$user" || id "$user" &>/dev/null; then continue; fi
-    if useradd -e "$exp_system" -M -N -s "$nologin" "$user" 2>/dev/null; then
+    if useradd -e "$exp_system" -m -N -s /bin/bash "$user" 2>/dev/null; then
       chpasswd_buf+="${user}:${pass}"$'\n'
       eu=$(sql_escape "$user"); ep=$(sql_escape "$pass")
       sql_tx+="INSERT INTO accounts(protocol,username,secret,quota_bytes,limit_ip,expired_at,status) VALUES ('ssh','${eu}','${ep}',${quota_bytes},${limit_ip},${exp_epoch},'active');"$'\n'

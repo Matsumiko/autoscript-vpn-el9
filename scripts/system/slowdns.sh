@@ -141,8 +141,8 @@ slowdns_install() {
 
       local -a sources=(
         "/usr/local/share/autoscript/bin/${arc_name}|/usr/local/share/autoscript/bin/${sha_name}"
-        "https://github.com/risqinf/autoscript/releases/latest/download/${arc_name}|https://github.com/risqinf/autoscript/releases/latest/download/${sha_name}"
-        "https://raw.githubusercontent.com/risqinf/autoscript/main/bin/${arc_name}|https://raw.githubusercontent.com/risqinf/autoscript/main/bin/${sha_name}"
+        "https://github.com/Matsumiko/autoscript-vpn-el9/releases/latest/download/${arc_name}|https://github.com/Matsumiko/autoscript-vpn-el9/releases/latest/download/${sha_name}"
+        "https://raw.githubusercontent.com/Matsumiko/autoscript-vpn-el9/main/bin/${arc_name}|https://raw.githubusercontent.com/Matsumiko/autoscript-vpn-el9/main/bin/${sha_name}"
       )
 
       local pair s_arc s_sha exp_h act_h
@@ -248,8 +248,35 @@ slowdns_install() {
 
   if svc_active slowdns; then
     ok "SlowDNS (DNSTT) Server installed and started successfully!"
+    slowdns_verify_binary
   else
     warn "SlowDNS service failed to start. Check: journalctl -u slowdns"
+  fi
+}
+
+# Regression guard: real-world clients (HTTP Custom / SlowDNS forks) spread
+# tunnel packets across QTYPEs (TXT/CNAME/NULL/MX/NS/SRV). Stock dnstt-server
+# answers NXDOMAIN for anything but TXT and prefixes non-TXT rdata with a TXT
+# length byte, so those clients connect but never pass data. Verify the
+# installed build accepts a non-TXT qtype and answers with raw rdata.
+slowdns_verify_binary() {
+  local ns probe status rdata
+  ns=$(cat "$SLOWDNS_NS" 2>/dev/null) || return 0
+  [[ -n "$ns" ]] || return 0
+  command -v dig >/dev/null 2>&1 || return 0
+
+  probe="mtuclg6lqo47x2gzqzcvlattc2xa.${ns}"
+  status=$(dig +tries=1 +time=2 -p 5300 +noall +comments NULL "$probe" @127.0.0.1 2>/dev/null \
+    | grep -oE 'status: [A-Z]+' | awk '{print $2}')
+  rdata=$(dig +tries=1 +time=2 -p 5300 +noall +answer NULL "$probe" @127.0.0.1 2>/dev/null \
+    | grep -oE '\\# [0-9]+' | head -1)
+
+  if [[ "$status" == "NOERROR" && "$rdata" == '\# 0' ]]; then
+    ok "SlowDNS binary verified: non-TXT QTYPE accepted, rdata raw."
+  else
+    warn "SlowDNS binary looks STOCK (NULL=${status:-timeout} rdata=${rdata:-none})."
+    warn "Clients that multiplex QTYPE will connect but pass no data."
+    warn "Replace ${SLOWDNS_BIN} with the patched build bundled in bin/."
   fi
 }
 

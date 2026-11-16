@@ -223,7 +223,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 KillMode=process
-ExecStart=/usr/sbin/dropbear -F -w -g -K 60 -I 300 -T 5 -p 109 -p 143 -b /etc/issue.net -r /etc/dropbear/dropbear_rsa_host_key -r /etc/dropbear/dropbear_ecdsa_host_key -W 65536
+ExecStart=/usr/sbin/dropbear -F -K 60 -I 300 -T 5 -p 109 -p 143 -b /etc/issue.net -r /etc/dropbear/dropbear_rsa_host_key -r /etc/dropbear/dropbear_ecdsa_host_key -W 65536
 Restart=always
 RestartSec=1s
 LimitNOFILE=1048576

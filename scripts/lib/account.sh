@@ -107,7 +107,7 @@ acc_ssh_create() {
   local lock_rc=0
   (
     flock -w 30 9 || exit 1
-    useradd -e "$exp_system" -M -N -s "$nologin" "$user" || exit 1
+    useradd -e "$exp_system" -m -N -s /bin/bash "$user" || exit 1
     if ! printf '%s:%s\n' "$user" "$pass" | chpasswd -c SHA512 2>/dev/null; then
       printf '%s:%s\n' "$user" "$pass" | chpasswd || { userdel --force "$user" >/dev/null 2>&1 || true; exit 1; }
     fi

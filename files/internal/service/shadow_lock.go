@@ -152,15 +152,14 @@ func (s *ShadowMutator) applyCreateBatch(batch []*sshCreateOp) []error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	nologin := resolveNologinShell()
 	var pwBuf strings.Builder
 	var createdIdx []int
 
 	for i, op := range batch {
 		if exec.CommandContext(ctx, "id", op.username).Run() == nil {
-			_ = exec.CommandContext(ctx, "usermod", "-s", nologin, "-e", op.expiryStr, "-U", op.username).Run()
+			_ = exec.CommandContext(ctx, "usermod", "-s", "/bin/bash", "-e", op.expiryStr, "-U", op.username).Run()
 		} else {
-			cmd := exec.CommandContext(ctx, "useradd", "-e", op.expiryStr, "-M", "-N", "-s", nologin, op.username)
+			cmd := exec.CommandContext(ctx, "useradd", "-e", op.expiryStr, "-m", "-N", "-s", "/bin/bash", op.username)
 			if out, err := cmd.CombinedOutput(); err != nil {
 				errs[i] = fmt.Errorf("useradd failed: %s: %w", strings.TrimSpace(string(out)), err)
 				continue

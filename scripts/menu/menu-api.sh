@@ -164,7 +164,7 @@ install_api_service() {
   elif [[ -f /root/autoscript/install-api.sh ]]; then
     bash /root/autoscript/install-api.sh
   else
-    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/risqinf/autoscript/main/install-api.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/Matsumiko/autoscript-vpn-el9/main/install-api.sh | bash
   fi
   read -n 1 -s -r -p " Press any key to return..."
 }
@@ -176,7 +176,7 @@ uninstall_api_service() {
   elif [[ -f /root/autoscript/uninstall-api.sh ]]; then
     bash /root/autoscript/uninstall-api.sh
   else
-    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/risqinf/autoscript/main/uninstall-api.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/Matsumiko/autoscript-vpn-el9/main/uninstall-api.sh | bash
   fi
   read -n 1 -s -r -p " Press any key to return..."
 }

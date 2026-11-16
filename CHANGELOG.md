@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] — fork fixes
+
+### Fixed
+- **SlowDNS (DNSTT) sekarang benar-benar lewat data.** Bundled `dnstt-server`
+  di-patch: menerima semua QTYPE (TXT/CNAME/NULL/MX/NS/SRV/A) dan memakai
+  rdata raw untuk non-TXT. Sebelumnya client nyata (HTTP Custom / SlowDNS
+  fork) connect lalu diam karena 6 dari 7 paket data dijawab `NXDOMAIN`.
+- **Dropbear tidak lagi menolak root** — flag `-w -g` dihapus dari
+  `install.sh` dan `scripts/menu/menu-dropbear.sh`. Login via SlowDNS
+  (forward ke `127.0.0.1:109`) tidak lagi `root login rejected`.
+- **Akun SSH punya home + shell nyata** — `useradd -M -s nologin` diganti
+  `useradd -m -s /bin/bash` di 8 jalur provisioning (CLI, menu, API, bulk,
+  autounban, recovery, trial). Sebelumnya dropbear keluar dengan
+  `Error changing directory` / shell menolak login.
+
+### Added
+- `slowdns_verify_binary()` — cek otomatis pasca-install: kalau binary
+  yang terpasang masih build stock, installer memberi warning eksplisit.
+- `PATCHES.md` — daftar delta dari upstream + cara rebuild binary dnstt.
+
 ## [5.6.3] - 2026-11-15
 
 Enterprise Real-time Telegram Notifications, 15-Minute Auto-Unban Engine, and High-Concurrency Burst Hardening: **Release 5.6.3**.

@@ -337,8 +337,8 @@ mkdir -p /etc/xray/recovery/{ssh,vless,trojan,vmess,noobz}
 print_success "Directories created."
 
 # Copy Menu
-REPO_OWNER="risqinf"
-REPO_NAME="autoscript"
+REPO_OWNER="Matsumiko"
+REPO_NAME="autoscript-vpn-el9"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 REPO_TARBALL="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${REPO_BRANCH}.tar.gz"
 
@@ -690,7 +690,7 @@ Type=simple
 KillMode=process
 # No -E: log via syslog (authpriv) so logins reach /var/log/secure.
 # -F foreground | -w block root | -g block root password | -K 60 keepalive | -I 300 idle | -T 5 max tries
-ExecStart=/usr/sbin/dropbear -F -w -g -K 60 -I 300 -T 5 -p 109 -p 143 -b /etc/issue.net -r /etc/dropbear/dropbear_rsa_host_key -r /etc/dropbear/dropbear_ecdsa_host_key -W 65536
+ExecStart=/usr/sbin/dropbear -F -K 60 -I 300 -T 5 -p 109 -p 143 -b /etc/issue.net -r /etc/dropbear/dropbear_rsa_host_key -r /etc/dropbear/dropbear_ecdsa_host_key -W 65536
 Restart=always
 RestartSec=1s
 LimitNOFILE=1048576
