@@ -90,11 +90,11 @@ func (s *xrayService) GetConfigLink(ctx context.Context, protocol, username, sec
 func (s *xrayService) getVLESSLink(username, secret, domain string) *model.ConfigLink {
 	wsTLS := fmt.Sprintf("vless://%s@%s:443?path=/vless&security=tls&encryption=none&type=ws&host=%s&sni=%s#%s-WS-TLS",
 		secret, domain, domain, domain, username)
-	wsNTLS := fmt.Sprintf("vless://%s@%s:80?path=/vless&encryption=none&type=ws&host=%s#%s-WS-NTLS",
+	wsNTLS := fmt.Sprintf("vless://%s@%s:80?path=/vless&security=none&encryption=none&type=ws&host=%s#%s-WS-NTLS",
 		secret, domain, domain, username)
 	huTLS := fmt.Sprintf("vless://%s@%s:443?path=/vless-hu&security=tls&encryption=none&type=httpupgrade&host=%s&sni=%s#%s-HU-TLS",
 		secret, domain, domain, domain, username)
-	huNTLS := fmt.Sprintf("vless://%s@%s:80?path=/vless-hu&encryption=none&type=httpupgrade&host=%s#%s-HU-NTLS",
+	huNTLS := fmt.Sprintf("vless://%s@%s:80?path=/vless-hu&security=none&encryption=none&type=httpupgrade&host=%s#%s-HU-NTLS",
 		secret, domain, domain, username)
 	xhttpTLS := fmt.Sprintf("vless://%s@%s:443?mode=auto&path=/vless-xhttp&security=tls&encryption=none&type=xhttp&host=%s&sni=%s#%s-XHTTP-TLS",
 		secret, domain, domain, domain, username)

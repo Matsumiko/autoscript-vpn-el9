@@ -526,7 +526,7 @@ xray_tg_text() {
     vless)
       [[ -z "$title" ]] && title="VLESS ACCOUNT"
       link1=$(html_escape "vless://${secret}@${domain}:443?path=/vless&security=tls&encryption=none&type=ws&host=${domain}&sni=${domain}#${user}")
-      link2=$(html_escape "vless://${secret}@${domain}:80?path=/vless&encryption=none&type=ws&host=${domain}#${user}")
+      link2=$(html_escape "vless://${secret}@${domain}:80?path=/vless&security=none&encryption=none&type=ws&host=${domain}#${user}")
       cat <<EOF
 <b>━━━━━━━━━━━━━━━━━━━━━━━━━━━</b>
 <b>      ⊹ $(html_escape "$title") ⊹</b>

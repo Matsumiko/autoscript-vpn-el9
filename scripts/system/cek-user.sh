@@ -69,7 +69,7 @@ while IFS='|' read -r proto secret iplim qb ub exp status; do
       echo -e " ${WHITE}Link TLS :${NC}"
       echo -e " ${GREEN}vless://${secret}@${domain}:443?path=/vless&security=tls&encryption=none&type=ws&host=${domain}&sni=${domain}#${user}${NC}"
       echo -e " ${WHITE}Link HTTP :${NC}"
-      echo -e " ${GREEN}vless://${secret}@${domain}:80?path=/vless&encryption=none&type=ws&host=${domain}#${user}${NC}"
+      echo -e " ${GREEN}vless://${secret}@${domain}:80?path=/vless&security=none&encryption=none&type=ws&host=${domain}#${user}${NC}"
       ;;
     vmess)
       ui_kv "UUID"     "${secret}  (AlterId 0)"

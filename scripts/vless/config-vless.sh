@@ -30,9 +30,9 @@ qb=$(db_get_field "vless" "$user" "quota_bytes")
 [[ "$qb" == "0" ]] && quota="Unlimited" || quota="$(( qb / 1073741824 )) GB"
 
 vless_ws_tls="vless://${uuid}@${domain}:443?path=/vless&security=tls&encryption=none&type=ws&host=${domain}&sni=${domain}#${user}-WS-TLS"
-vless_ws_ntls="vless://${uuid}@${domain}:80?path=/vless&encryption=none&type=ws&host=${domain}#${user}-WS-NTLS"
+vless_ws_ntls="vless://${uuid}@${domain}:80?path=/vless&security=none&encryption=none&type=ws&host=${domain}#${user}-WS-NTLS"
 vless_hu_tls="vless://${uuid}@${domain}:443?path=/vless-hu&security=tls&encryption=none&type=httpupgrade&host=${domain}&sni=${domain}#${user}-HU-TLS"
-vless_hu_ntls="vless://${uuid}@${domain}:80?path=/vless-hu&encryption=none&type=httpupgrade&host=${domain}#${user}-HU-NTLS"
+vless_hu_ntls="vless://${uuid}@${domain}:80?path=/vless-hu&security=none&encryption=none&type=httpupgrade&host=${domain}#${user}-HU-NTLS"
 vless_xhttp_tls="vless://${uuid}@${domain}:443?mode=auto&path=/vless-xhttp&security=tls&encryption=none&type=xhttp&host=${domain}&sni=${domain}#${user}-XHTTP-TLS"
 vless_xhttp_ntls="vless://${uuid}@${domain}:80?mode=auto&path=/vless-xhttp&security=none&encryption=none&type=xhttp&host=${domain}#${user}-XHTTP-NTLS"
 vless_grpc_tls="vless://${uuid}@${domain}:443?serviceName=vless-grpc&security=tls&encryption=none&type=grpc&sni=${domain}#${user}-gRPC"
