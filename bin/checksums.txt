@@ -1,4 +1,4 @@
-755a0b5b80dbcfb090569760d994246faa6bd201d7775be5a95eec4705ae55e6  dropbear-2019.78-linux-arm64.tar.gz
-ae8004eee884711e951c115a1ca5c91beaf25128ca516588497e575824ed2784  dnstt-server-linux-arm64.tar.gz
-b0cba689f716bcedddc1f7870e5ce884478a0a0f216aa8aca383e04a3960c842  dropbear-2019.78-linux-amd64.tar.gz
-eb001c7e64848540bc5a808eab0d1186b39cb8d549d97ea19ca4855c99e3af48  dnstt-server-linux-amd64.tar.gz
+13fc994f5d22f34d9417c722fb3d736a6de57201eb4ef00cda55c3c407aff2f2  dnstt-server-linux-amd64.tar.gz
+3f3627dc4d92d6a0823fa957b300102bbe6a8834fb1764b2d7da02ed2f7eb757  dropbear-2019.78-linux-amd64.tar.gz
+4c7bf7d50fd7278664feee58294351eb45fcc08de0fc8c8701fe6beb1b409314  dropbear-2019.78-linux-arm64.tar.gz
+c9e31256e966ddf370f441ec28a42fd64aa51777b3987c15f4d2cb32694b8534  dnstt-server-linux-arm64.tar.gz
