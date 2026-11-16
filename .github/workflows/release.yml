@@ -284,6 +284,7 @@ jobs:
           # answers. Without it, client yang menyebar paket ke
           # TXT/CNAME/NULL/MX/NS/SRV (HTTP Custom / SlowDNS fork) connect tapi
           # tidak pernah lewat data.
+          (
           cd "${TMP_SRC}/dnstt"
           python3 - <<'PATCH'
           import re, sys
@@ -313,6 +314,7 @@ jobs:
           open(p, 'w').write(s)
           print('dnstt fork patch applied')
           PATCH
+          )
 
           (
             cd "${TMP_SRC}/dnstt/dnstt-server"
