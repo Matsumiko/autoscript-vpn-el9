@@ -6,6 +6,12 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased] — fork fixes
 
 ### Fixed
+- **Nginx gagal start di distro nginx < 1.25.1** — `risqinf.conf` memakai
+  direktif `http2 on;` (baru ada sejak nginx 1.25.1). Build distro Rocky/Alma
+  Linux 9 = nginx 1.20.1, jadi unit mati dengan
+  `nginx: [emerg] unknown directive "http2"` dan seluruh trafik HTTP/WS di
+  balik HAProxy jadi mati. `nginx_install_logic()` sekarang mendeteksi versi
+  dan memakai sintaks `listen ... proxy_protocol http2;` untuk nginx lama.
 - **SlowDNS (DNSTT) sekarang benar-benar lewat data.** Bundled `dnstt-server`
   di-patch: menerima semua QTYPE (TXT/CNAME/NULL/MX/NS/SRV/A) dan memakai
   rdata raw untuk non-TXT. Sebelumnya client nyata (HTTP Custom / SlowDNS

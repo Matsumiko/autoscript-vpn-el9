@@ -1438,6 +1438,19 @@ nginx_install_logic() {
   print_info "Configuring Nginx Enterprise Node..."
   dnf install nginx -y >/dev/null 2>&1
 
+  # `http2 on;` only exists on nginx >= 1.25.1. Distro builds (Rocky/Alma 9)
+  # ship 1.20.x, which rejects it with "unknown directive" and refuses to boot.
+  local ngx_ver ngx_h2_listen ngx_h2_directive
+  ngx_ver=$(nginx -v 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)
+  if [[ -n "$ngx_ver" ]] && ! awk -v v="$ngx_ver" 'BEGIN{split(v,a,"."); exit !((a[1]>1)||(a[1]==1&&(a[2]>25||(a[2]==25&&a[3]>=1))))}'; then
+    print_info "nginx ${ngx_ver} detected: using legacy 'listen ... http2' syntax."
+    ngx_h2_listen="listen 127.0.0.1:82 default_server proxy_protocol http2;"
+    ngx_h2_directive=""
+  else
+    ngx_h2_listen="listen 127.0.0.1:82 default_server proxy_protocol;"
+    ngx_h2_directive="http2 on;"
+  fi
+
   cat >/etc/nginx/nginx.conf <<EOF
 user nginx;
 worker_processes auto;
@@ -1749,8 +1762,8 @@ server {
 
 # Dedicated HTTP/2 server block for gRPC, XHTTP, and HTTPUpgrade
 server {
-    listen 127.0.0.1:82 default_server proxy_protocol;
-    http2 on;
+    ${ngx_h2_listen}
+    ${ngx_h2_directive}
     server_name ${domain};
 
     # gRPC inbounds
