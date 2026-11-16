@@ -280,6 +280,40 @@ jobs:
           git clone --depth 1 https://www.bamsoftware.com/git/dnstt.git "${TMP_SRC}/dnstt" || \
             git clone --depth 1 https://github.com/Mygod/dnstt.git "${TMP_SRC}/dnstt"
 
+          # Fork patch: accept every QTYPE and emit raw rdata for non-TXT
+          # answers. Without it, client yang menyebar paket ke
+          # TXT/CNAME/NULL/MX/NS/SRV (HTTP Custom / SlowDNS fork) connect tapi
+          # tidak pernah lewat data.
+          cd "${TMP_SRC}/dnstt"
+          python3 - <<'PATCH'
+          import re, sys
+          p = 'dnstt-server/main.go'
+          s = open(p).read()
+
+          # 1) Drop the "TXT only" rejection block.
+          s2, n = re.subn(
+              r'\tif question\.Type != dns\.RRTypeTXT \{.*?\n\t\}\n\n',
+              '\t// Accept any QTYPE (clients multiplex across query types).\n\n',
+              s, count=1, flags=re.S)
+          if n != 1:
+              sys.exit('PATCH FAILED: TXT-only guard not found')
+          s = s2
+
+          # 2) Non-TXT rdata must be raw bytes, not TXT length-prefixed.
+          old = '\t\t\trec.Resp.Answer[0].Data = dns.EncodeRDataTXT(payload.Bytes())'
+          new = (
+              '\t\t\tif rec.Resp.Question[0].Type == dns.RRTypeTXT {\n'
+              '\t\t\t\trec.Resp.Answer[0].Data = dns.EncodeRDataTXT(payload.Bytes())\n'
+              '\t\t\t} else {\n'
+              '\t\t\t\trec.Resp.Answer[0].Data = payload.Bytes()\n'
+              '\t\t\t}')
+          if s.count(old) != 1:
+              sys.exit('PATCH FAILED: rdata encode line not found')
+          s = s.replace(old, new, 1)
+          open(p, 'w').write(s)
+          print('dnstt fork patch applied')
+          PATCH
+
           (
             cd "${TMP_SRC}/dnstt/dnstt-server"
             go build -trimpath -ldflags="-s -w" -o "${GITHUB_WORKSPACE}/dist-dnstt/stage/dnstt-server"
